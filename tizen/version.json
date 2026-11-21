@@ -1,0 +1,15 @@
+{
+ "version": "1.2.3",
+ "shell": 1,
+ "service": 0,
+ "files": {
+  "hls.min.js": {
+   "sha256": "e02627457e91955d6f80381b71c0e9a4c80e2ab8289785ce99149bbc3ccbd950",
+   "size": 626297
+  },
+  "app.js": {
+   "sha256": "d92c0fa8253fdf3684d2b9a874f613de7506051a3f1c13d93cd23a6a33e07302",
+   "size": 497458
+  }
+ }
+}

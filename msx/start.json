@@ -1,0 +1,9 @@
+{
+  "name": "Perfect TV",
+  "version": "1.0",
+  "parameter": "menu:{PREFIX}{SERVER}/msx/menu.json",
+  "launcher": {
+    "image": "https://perfect-tv.github.io/largeIcon.png",
+    "color": "msx-black-soft"
+  }
+}

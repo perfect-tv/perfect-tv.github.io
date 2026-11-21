@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Perfect TV</title>
+<meta name="description" content="Perfect TV — IPTV-плеер для смарт-ТВ: LG webOS, Samsung Tizen, браузер. IPTV player for smart TVs.">
+<link rel="icon" href="../largeIcon.png">
+<style>
+  :root { --bg: #111214; --card: #1c1d20; --line: #2b2d31; --text: #f2f2f2; --sub: #a3a6ad; --accent: #e53935; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 860px; margin: 0 auto; padding: 32px 16px 48px; }
+  header { display: flex; align-items: center; gap: 16px; margin-bottom: 8px; }
+  header img { width: 64px; height: 64px; border-radius: 14px; }
+  h1 { margin: 0; font-size: 32px; }
+  .lead { color: var(--sub); margin: 4px 0 28px; }
+  .langs { margin-left: auto; display: flex; gap: 6px; }
+  .langs button { background: var(--card); color: var(--sub); border: 1px solid var(--line); border-radius: 8px; padding: 4px 10px; cursor: pointer; font: inherit; }
+  .langs button.on { color: var(--text); border-color: var(--sub); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 14px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 18px; }
+  .card h2 { margin: 0 0 8px; font-size: 19px; }
+  .card p, .card ol { margin: 6px 0; color: var(--sub); }
+  .card ol { padding-left: 20px; }
+  a { color: #8ab4ff; }
+  .btn { display: inline-block; margin-top: 10px; padding: 8px 14px; border-radius: 8px; background: var(--accent); color: #fff; text-decoration: none; font-weight: 600; }
+  code { background: #000; padding: 1px 6px; border-radius: 5px; color: #ddd; overflow-wrap: anywhere; }
+  footer { margin-top: 32px; color: var(--sub); display: flex; flex-wrap: wrap; gap: 16px; }
+  [data-l="en"] { display: none; }
+  body.en [data-l="ru"] { display: none; }
+  body.en [data-l="en"] { display: revert; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <img src="../largeIcon.png" alt="">
+    <h1>Perfect TV</h1>
+    <div class="langs"><button id="ru">RU</button><button id="en">EN</button></div>
+  </header>
+  <p class="lead" data-l="ru">IPTV-плеер для смарт-ТВ: свой плейлист M3U, программа передач XMLTV, архив, гид в духе привычного телевизора — с пульта. Бесплатно, с открытым кодом (GNU GPL 3.0).</p>
+  <p class="lead" data-l="en">IPTV player for smart TVs: your own M3U playlist, XMLTV programme guide, catch-up, a familiar TV-style guide — all from the remote. Free and open source (GNU GPL 3.0).</p>
+
+  <div class="grid">
+    <section class="card">
+      <h2>LG webOS</h2>
+      <div data-l="ru">
+        <p>webOS 3.0 и новее (ТВ с 2016 года). Ставится в режиме разработчика.</p>
+        <ol>
+          <li>В LG Content Store — приложение «Developer Mode», вход в аккаунт LG Developer, «Dev Mode Status» — вкл.</li>
+          <li>На компьютере с Windows — установщик Perfect TV из релиза: он найдёт ТВ и поставит приложение.</li>
+        </ol>
+        <p>Режим разработчика живёт около 50 часов — установщик его продлевает.</p>
+      </div>
+      <div data-l="en">
+        <p>webOS 3.0 and newer (2016+ TVs). Installed in Developer Mode.</p>
+        <ol>
+          <li>Install “Developer Mode” from LG Content Store, sign in with an LG Developer account, turn “Dev Mode Status” on.</li>
+          <li>On a Windows PC run the Perfect TV installer from the release: it finds the TV and installs the app.</li>
+        </ol>
+        <p>Developer Mode lasts about 50 hours — the installer extends it.</p>
+      </div>
+      <a class="btn" href="https://github.com/perfect-tv/perfect-tv-smart/releases/latest"><span data-l="ru">Скачать</span><span data-l="en">Download</span></a>
+    </section>
+
+    <section class="card">
+      <h2>Samsung Tizen</h2>
+      <div data-l="ru">
+        <p>Tizen 3.0 и новее (ТВ с 2017 года). Ставится в режиме разработчика через Apps2Samsung — он сам сделает сертификат Samsung под ваш ТВ.</p>
+        <ol>
+          <li>На ТВ: Apps → ввести <code>12345</code> → Developer mode — вкл., IP — адрес компьютера, перезагрузить ТВ.</li>
+          <li>Apps2Samsung на компьютере или телефоне → Perfect TV (или файл <code>.wgt</code> из релиза) → «Install».</li>
+        </ol>
+      </div>
+      <div data-l="en">
+        <p>Tizen 3.0 and newer (2017+ TVs). Installed in Developer Mode via Apps2Samsung — it creates the Samsung certificate for your TV.</p>
+        <ol>
+          <li>On the TV: Apps → type <code>12345</code> → Developer mode on, IP = your computer’s address, restart the TV.</li>
+          <li>Apps2Samsung on a computer or phone → Perfect TV (or the <code>.wgt</code> from the release) → Install.</li>
+        </ol>
+      </div>
+      <a class="btn" href="https://github.com/Jellyfin2Samsung/Samsung-Jellyfin-Installer">Apps2Samsung</a>
+    </section>
+
+    <section class="card">
+      <h2 data-l="ru">Браузер, VIDAA, Titan OS, MSX</h2>
+      <h2 data-l="en">Browser, VIDAA, Titan OS, MSX</h2>
+      <div data-l="ru">
+        <p>Приложение открывается по адресу — без установки:</p>
+        <p><code>perfect-tv.github.io</code></p>
+        <p><b>MSX</b> (Media Station X): «Settings → Start Parameter → Setup», ввести <code>perfect-tv.github.io</code> и включить замок (HTTPS) — Perfect TV будет открываться при запуске MSX.</p>
+        <p><b>Только адреса https://</b>: страница открыта по HTTPS, и браузер не загрузит плейлист, программу и каналы по http://. Для них и для серверов без CORS — прокси: <code>perfect-tv.github.io/?proxy=http://адрес:порт</code>.</p>
+      </div>
+      <div data-l="en">
+        <p>The app runs from an address — nothing to install:</p>
+        <p><code>perfect-tv.github.io</code></p>
+        <p><b>MSX</b> (Media Station X): “Settings → Start Parameter → Setup”, enter <code>perfect-tv.github.io</code> and turn on the lock (HTTPS) — Perfect TV will open when MSX starts.</p>
+        <p><b>https:// addresses only</b>: the page runs over HTTPS, so the browser will not load playlists, guides or channels over http://. For those and for servers without CORS use a proxy: <code>perfect-tv.github.io/?proxy=http://host:port</code>.</p>
+      </div>
+      <a class="btn" href="../"><span data-l="ru">Открыть</span><span data-l="en">Open</span></a>
+    </section>
+
+    <section class="card">
+      <h2>Android TV</h2>
+      <p data-l="ru">Отдельная версия для Android TV и приставок.</p>
+      <p data-l="en">A separate version for Android TV and set-top boxes.</p>
+      <a class="btn" href="https://github.com/perfect-tv/perfect-tv-android">GitHub</a>
+    </section>
+  </div>
+
+  <footer>
+    <a href="https://t.me/perfect_tv_app">Telegram</a>
+    <a href="https://boosty.to/rootu/donate"><span data-l="ru">Поддержать проект</span><span data-l="en">Support the project</span></a>
+    <a href="https://github.com/perfect-tv/perfect-tv-smart"><span data-l="ru">Исходный код</span><span data-l="en">Source code</span></a>
+    <span data-l="ru">Плейлисты не входят в приложение — используйте свои.</span>
+    <span data-l="en">No playlists are included — bring your own.</span>
+  </footer>
+</main>
+<script>
+  (function () {
+    var KEY = 'ptv-site-lang';
+    function set(l) {
+      document.body.className = l === 'en' ? 'en' : '';
+      document.documentElement.lang = l;
+      document.getElementById('ru').className = l === 'ru' ? 'on' : '';
+      document.getElementById('en').className = l === 'en' ? 'on' : '';
+      try { localStorage.setItem(KEY, l); } catch (e) { /* */ }
+    }
+    var saved = null;
+    try { saved = localStorage.getItem(KEY); } catch (e) { /* */ }
+    var nav = (navigator.language || 'en').toLowerCase();
+    var cis = /^(ru|uk|be|kk|uz|ky|tg|hy|az|ka)/.test(nav);
+    set(saved || (cis ? 'ru' : 'en'));
+    document.getElementById('ru').onclick = function () { set('ru'); };
+    document.getElementById('en').onclick = function () { set('en'); };
+  })();
+</script>
+</body>
+</html>

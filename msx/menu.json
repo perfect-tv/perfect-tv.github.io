@@ -1,0 +1,32 @@
+{
+  "name": "Perfect TV",
+  "version": "1.0",
+  "headline": "Perfect TV",
+  "action": "link:https://perfect-tv.github.io/",
+  "menu": [{
+    "icon": "live-tv",
+    "label": "Perfect TV",
+    "data": {
+      "type": "pages",
+      "headline": "Perfect TV",
+      "pages": [{
+        "items": [{
+          "type": "default",
+          "layout": "0,0,4,4",
+          "image": "https://perfect-tv.github.io/largeIcon.png",
+          "imageFiller": "smart",
+          "title": "Perfect TV",
+          "titleFooter": "IPTV",
+          "action": "link:https://perfect-tv.github.io/"
+        }, {
+          "type": "default",
+          "layout": "4,0,8,4",
+          "icon": "info",
+          "title": "About",
+          "titleFooter": "perfect-tv.github.io/about",
+          "action": "link:https://perfect-tv.github.io/about/"
+        }]
+      }]
+    }
+  }]
+}

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Perfect TV — плейлист на телевизор</title>
+<link rel="icon" href="../largeIcon.png">
+<!--
+  Страница телефона для ввода плейлиста по QR (src/core/qrrtc.ts — сторона ТВ). Адрес: #<id ТВ>.<ключ>[.e —
+  программа XMLTV: одно поле адреса, без названия].
+  Телефон создаёт предложение WebRTC, через сервер сигнализации (ntfy.sh: тема ТВ и своя тема, ?cache=no)
+  получает ответ ТВ и отправляет ссылку прямо на ТВ по каналу данных: сервер ссылку не видит.
+-->
+<style>
+  :root { --bg: #111214; --card: #1c1d20; --line: #2b2d31; --text: #f2f2f2; --sub: #a3a6ad; --accent: #e53935; --ok: #43a047; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 520px; margin: 0 auto; padding: 24px 16px 40px; }
+  header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  header img { width: 48px; height: 48px; border-radius: 11px; }
+  h1 { margin: 0; font-size: 22px; }
+  label { display: block; margin: 14px 0 6px; color: var(--sub); font-size: 14px; }
+  input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: var(--text); font: inherit; }
+  button { width: 100%; margin-top: 18px; padding: 13px; border: 0; border-radius: 10px; background: var(--accent); color: #fff; font: inherit; font-weight: 600; }
+  button:disabled { opacity: .55; }
+  #status { margin-top: 16px; min-height: 24px; color: var(--sub); }
+  #status.ok { color: var(--ok); font-weight: 600; }
+  #status.err { color: #ff8a80; }
+  .note { margin-top: 28px; color: var(--sub); font-size: 13px; }
+  a { color: #8ab4ff; }
+</style>
+</head>
+<body>
+<main>
+  <header><img src="../largeIcon.png" alt=""><h1 id="t-title">Плейлист на телевизор</h1></header>
+  <form id="f">
+    <label for="url" id="t-url">Адрес плейлиста M3U / M3U8</label>
+    <input id="url" type="url" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="https://…" required>
+    <label for="name" id="t-name">Название (необязательно)</label>
+    <input id="name" type="text" autocomplete="off">
+    <button id="send" type="submit">Отправить на ТВ</button>
+  </form>
+  <div id="status"></div>
+  <p class="note" id="t-note">Ссылка уходит прямо на телевизор (WebRTC) и нигде не сохраняется. Если не получается — телефон и ТВ в одной сети Wi-Fi, QR-код на ТВ ещё открыт.</p>
+  <p class="note"><a href="../about/">Perfect TV</a></p>
+</main>
+<script>
+(function () {
+  var SIGNAL = 'ntfy.sh';
+  var ICE = [{ urls: 'stun:stun.l.google.com:19302' }];
+  var ru = /^(ru|uk|be|kk|uz|ky|tg|hy|az|ka)/i.test(navigator.language || '');
+  var T = ru ? {
+    noid: 'Откройте эту страницу по QR-коду с телевизора.',
+    norl: 'Браузер телефона не поддерживает WebRTC — откройте страницу в Chrome или Safari.',
+    conn: 'Соединение с телевизором…', sent: 'Готово: плейлист на телевизоре.',
+    fail: 'Не удалось связаться с телевизором. Проверьте, что QR-код на ТВ ещё открыт, и попробуйте снова.',
+    bad: 'Нужен адрес http:// или https://', rej: 'Телевизор не принял ссылку — откройте QR-код заново.',
+    hOnly: 'Поддерживаются только адреса https:// — приложение на телевизоре открыто с сайта по HTTPS, и браузер не загрузит http://.',
+    hBad: 'Нужен адрес https:// (http:// на этом телевизоре не загрузится).',
+    eTitle: 'Программа передач на телевизор', eUrl: 'Адрес программы XMLTV (EPG)', eSent: 'Готово: источник программы на телевизоре.'
+  } : {
+    noid: 'Open this page from the QR code on the TV.',
+    norl: 'This browser has no WebRTC — open the page in Chrome or Safari.',
+    conn: 'Connecting to the TV…', sent: 'Done: the playlist is on the TV.',
+    fail: 'Could not reach the TV. Make sure the QR code is still open on the TV and try again.',
+    bad: 'An http:// or https:// address is needed', rej: 'The TV did not accept the link — open the QR code again.',
+    hOnly: 'Only https:// addresses are supported — the app on the TV runs from a website over HTTPS, and the browser will not load http://.',
+    hBad: 'An https:// address is needed (http:// will not load on this TV).',
+    eTitle: 'Programme guide to TV', eUrl: 'XMLTV (EPG) address', eSent: 'Done: the programme source is on the TV.'
+  };
+  if (!ru) {
+    document.documentElement.lang = 'en';
+    document.title = 'Perfect TV — playlist to TV';
+    document.getElementById('t-title').textContent = 'Playlist to TV';
+    document.getElementById('t-url').textContent = 'M3U / M3U8 playlist address';
+    document.getElementById('t-name').textContent = 'Name (optional)';
+    document.getElementById('send').textContent = 'Send to TV';
+    document.getElementById('t-note').textContent = 'The link goes straight to the TV (WebRTC) and is not stored anywhere. Not working? Keep the phone and the TV on the same Wi-Fi with the QR code still open on the TV.';
+  }
+  var st = document.getElementById('status'), btn = document.getElementById('send');
+  function say(text, cls) { st.textContent = text; st.className = cls || ''; }
+  var m = /^#(ptv-[a-z0-9]+)\.([a-z0-9]+)(\.e)?(\.s)?$/.exec(location.hash);
+  if (!m) { say(T.noid, 'err'); btn.disabled = true; return; }
+  var epg = !!m[3];
+  // .s — приложение на ТВ открыто по HTTPS без прокси: браузер ТВ не загрузит http://
+  var httpsOnly = !!m[4];
+  if (httpsOnly) {
+    var hn = document.createElement('p');
+    hn.className = 'note';
+    hn.style.color = '#ffcc80';
+    hn.textContent = T.hOnly;
+    document.getElementById('f').insertBefore(hn, document.getElementById('send'));
+    document.getElementById('url').placeholder = 'https://…';
+  }
+  if (epg) {
+    document.title = 'Perfect TV — ' + T.eTitle;
+    document.getElementById('t-title').textContent = T.eTitle;
+    document.getElementById('t-url').textContent = T.eUrl;
+    document.getElementById('url').placeholder = 'https://…/epg.xml.gz';
+    document.getElementById('t-name').style.display = 'none';
+    document.getElementById('name').style.display = 'none';
+  }
+  if (!window.RTCPeerConnection || !window.WebSocket) { say(T.norl, 'err'); btn.disabled = true; return; }
+  var tv = m[1], key = m[2];
+
+  function rand(n) { var a = 'abcdefghijkmnpqrstuvwxyz23456789', s = '', c = crypto.getRandomValues(new Uint8Array(n)); for (var i = 0; i < n; i++) s += a.charAt(c[i] % a.length); return s; }
+
+  function send(url, name) {
+    return new Promise(function (resolve, reject) {
+      var done = false, pc = null, me = 'ptvp-' + rand(20);
+      var ws = new WebSocket('wss://' + SIGNAL + '/' + me + '/ws');
+      function finish(err, v) {
+        if (done) return; done = true; clearTimeout(timer);
+        try { ws.close(); } catch (e) {}
+        setTimeout(function () { try { pc && pc.close(); } catch (e) {} }, 500);
+        if (err) reject(err); else resolve(v);
+      }
+      var timer = setTimeout(function () { finish(new Error('timeout')); }, 25000);
+      ws.onerror = function () { finish(new Error('signaling')); };
+      ws.onmessage = function (e) {
+        var msg; try { msg = JSON.parse(e.data); } catch (er) { return; }
+        if (msg.event === 'open' && !pc) {
+          pc = new RTCPeerConnection({ iceServers: ICE });
+          var ch = pc.createDataChannel('ptv');
+          ch.onopen = function () { ch.send(JSON.stringify({ k: key, url: url, name: name })); };
+          ch.onmessage = function (ev) {
+            var r; try { r = JSON.parse(ev.data); } catch (er) { return; }
+            if (r.ok) finish(null, true); else finish(new Error('rejected'));
+          };
+          pc.createOffer().then(function (o) { return pc.setLocalDescription(o); }).then(function () {
+            return new Promise(function (res) {
+              if (pc.iceGatheringState === 'complete') return res();
+              var t = setTimeout(res, 3000);
+              pc.onicecandidate = function (ev) { if (!ev.candidate) { clearTimeout(t); res(); } };
+            });
+          }).then(function () {
+            // простой POST (text/plain) — без предварительного OPTIONS; ?cache=no — сервер не хранит
+            return fetch('https://' + SIGNAL + '/' + tv + '?cache=no', { method: 'POST', headers: { 'Content-Type': 'text/plain' },
+              body: JSON.stringify({ t: 'offer', from: me, sdp: { type: pc.localDescription.type, sdp: pc.localDescription.sdp } }) });
+          }).catch(function (er) { finish(er); });
+        } else if (msg.event === 'message' && msg.message && pc) {
+          var d; try { d = JSON.parse(msg.message); } catch (er) { return; }
+          if (d && d.t === 'answer' && d.sdp) pc.setRemoteDescription(d.sdp).catch(function (er) { finish(er); });
+        }
+      };
+    });
+  }
+
+  document.getElementById('f').onsubmit = function (e) {
+    e.preventDefault();
+    var url = document.getElementById('url').value.trim(), name = document.getElementById('name').value.trim();
+    if (!/^https?:\/\//i.test(url)) { say(T.bad, 'err'); return; }
+    if (httpsOnly && !/^https:\/\//i.test(url)) { say(T.hBad, 'err'); return; }
+    btn.disabled = true; say(T.conn);
+    send(url, epg ? '' : name).then(function () { say(epg ? T.eSent : T.sent, 'ok'); }, function (er) {
+      btn.disabled = false; say(er && er.message === 'rejected' ? T.rej : T.fail, 'err');
+    });
+  };
+})();
+</script>
+</body>
+</html>
